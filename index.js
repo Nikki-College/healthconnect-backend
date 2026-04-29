@@ -3,12 +3,10 @@ const cors = require("cors");
 
 const app = express();
 
-const port = 3000;
 app.use(cors());
+app.use(express.json());
 
-app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
-});
+const PORT = process.env.PORT || 3000;
 
 const doctors = [
   {
@@ -43,18 +41,29 @@ const doctors = [
   },
 ];
 
+app.get("/", (req, res) => {
+  res.send("HealthConnect Backend Running Successfully");
+});
+
 app.get("/api/doctors", (req, res) => {
   const { name, location } = req.query;
   let result = [];
+
   if (name) {
-    result = doctors.filter((doc) => doc.name.toLowerCase().includes(name));
+    result = doctors.filter((doc) =>
+      doc.name.toLowerCase().includes(name.toLowerCase())
+    );
   } else if (location) {
     result = doctors.filter((doc) =>
-      doc.location.toLowerCase().includes(location)
+      doc.location.toLowerCase().includes(location.toLowerCase())
     );
   } else {
     result = doctors;
   }
+
   res.json(result);
 });
-// app.use("/images", express.static(path.join(__dirname, "public/images")));
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
